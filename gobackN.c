@@ -1,25 +1,46 @@
 #include<stdio.h>
-int main()
-{
-	int windowsize,sent=0,ack,i;
-	printf("enter window size\n");
-	scanf("%d",&windowsize);
-	while(1)
-	{
-		for( i = 0; i < windowsize; i++)
-		{
-			printf("Frame %d has been transmitted.\n",sent);
-			sent++;
-			if(sent == windowsize)
-				break;
+
+void transmit(int l,int h){
+	int i;
+	for(i=l;i<h;i++)
+		printf("%d frame transmitted.\n",i);
+}
+
+int askAck(){
+	int ack;
+	printf("Give the acknowldegement for last frame: ");
+	scanf("%d",&ack);
+	return ack;	
+}
+
+int main(){
+	int WindowSize,NumberOfFrames;
+	printf("Enter window size: ");
+	scanf("%d",&WindowSize);
+	printf("Enter Number of Frames: ");
+	scanf("%d",&NumberOfFrames);
+	
+	int itr = 0;
+	while(itr<NumberOfFrames){
+		int i = itr;
+		if(i+WindowSize<NumberOfFrames){
+				transmit(i,i+WindowSize);
+				int ack = askAck();	
+				while(ack!=i+WindowSize){
+					transmit(ack,i+WindowSize);
+					ack = askAck();	
+				}
 		}
-		printf("\nPlease enter the last Acknowledgement received.\n");
-		scanf("%d",&ack);
-		
-		if(ack == windowsize)
-			break;
-		else
-			sent = ack;
+		else{
+				transmit(i,NumberOfFrames);	
+				int ack = askAck();	
+				while(ack!=NumberOfFrames){
+					transmit(i=ack,NumberOfFrames);	
+					ack = askAck();	
+				}
+		}
+		itr = itr + WindowSize;
 	}
-	return 0;
+	
+	printf("All frames Transmitted Completely\n");
 }
